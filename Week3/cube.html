@@ -15,10 +15,10 @@
 	<body>
 
 		<div class="slidecontainer">
+			<p style="color:green">Value to be used for control</p>
 		  <input type="range" min="0" max="360" value="0" class="slider" id="myRange">
-		  <br>
-		  <input type="range" min="0" max="360" value="0" class="slider" id="myRange2">
-		</div>
+		  <p style="color:red">Value: <span id="showValue"> </span></p>
+			</div>
 
 
 
@@ -29,9 +29,11 @@
 			var mesh;
 			var delta = 0.0;
 			var slider = document.getElementById("myRange");
+			var showValue = document.getElementById("showValue");
 			var slideValue = slider.value;
 			slider.oninput = function() {
 				  slideValue = this.value;
+				showValue.innerHTML = this.value;
 			}
 			init();
 			animate();
