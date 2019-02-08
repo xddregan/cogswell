@@ -50,7 +50,7 @@
 				requestAnimationFrame( animate );
 				//mesh.rotation.x += 0.005;
 				//mesh.rotation.y += 0.01;
-				updateMeshMatrixRotate();
+				updateMeshMatrixRotateTranslate();
 				renderer.render( scene, camera );
 			}
 			function updateMeshMatrixTranslate()
@@ -83,7 +83,6 @@
 			    var m31 = 0.0; var m32 = 0.0; var m33 = 1.0; var m34 = 0.0;
 				var m41 = 0.0; var m42 = 0.0; var m43 = 0.0; var m44 = 1.0;
 
-				delta += 0.002;
 
 
 				// the order here seems differnt
@@ -96,6 +95,44 @@
 				mesh.matrix =m;
 
 			}
+
+			function updateMeshMatrixRotateFromEuler()
+			{
+
+				var m = new THREE.Matrix4();
+				delta += 0.002;
+				var euler = new THREE.Euler(delta,0.0,0.0,"XYZ");
+				m.makeRotationFromEuler(euler);
+
+				mesh.matrixAutoUpdate = false;
+				mesh.matrix =m;
+
+			}
+
+			
+			function updateMeshMatrixRotateTranslate()
+			{
+
+				var rotateMatrix = new THREE.Matrix4();
+				var translateMatrix = new THREE.Matrix4();
+				var combinedMatrix = new THREE.Matrix4();
+				delta += 0.002;
+				var euler = new THREE.Euler(0.0,0.0,delta,"XYZ");
+				rotateMatrix.makeRotationFromEuler(euler);
+				translateMatrix.makeTranslation(2.0,2.0,0.0);
+				
+				//combinedMatrix.multiplyMatrices(translateMatrix,rotateMatrix);
+				combinedMatrix.multiply(translateMatrix);	
+				combinedMatrix.multiply(rotateMatrix);	
+
+				mesh.matrixAutoUpdate = false;
+				mesh.matrix =combinedMatrix;
+
+			}
+
+
+
+
 
 		</script>
 
