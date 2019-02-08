@@ -50,7 +50,7 @@
 				requestAnimationFrame( animate );
 				//mesh.rotation.x += 0.005;
 				//mesh.rotation.y += 0.01;
-				updateMeshMatrixRotateTranslate();
+				updateMeshMatrixRotate();
 				renderer.render( scene, camera );
 			}
 			function updateMeshMatrixTranslate()
@@ -83,6 +83,7 @@
 			    var m31 = 0.0; var m32 = 0.0; var m33 = 1.0; var m34 = 0.0;
 				var m41 = 0.0; var m42 = 0.0; var m43 = 0.0; var m44 = 1.0;
 
+				delta += 0.002;
 
 
 				// the order here seems differnt
