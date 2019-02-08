@@ -14,12 +14,25 @@
 	</head>
 	<body>
 
+		<div class="slidecontainer">
+		  <input type="range" min="0" max="360" value="0" class="slider" id="myRange">
+		  <br>
+		  <input type="range" min="0" max="360" value="0" class="slider" id="myRange2">
+		</div>
+
+
+
 		<script src="js/three.js"></script>
 
 		<script>
 			var camera, scene, renderer;
 			var mesh;
 			var delta = 0.0;
+			var slider = document.getElementById("myRange");
+			var slideValue = slider.value;
+			slider.oninput = function() {
+				  slideValue = this.value;
+			}
 			init();
 			animate();
 			function init() {
@@ -83,7 +96,7 @@
 			    var m31 = 0.0; var m32 = 0.0; var m33 = 1.0; var m34 = 0.0;
 				var m41 = 0.0; var m42 = 0.0; var m43 = 0.0; var m44 = 1.0;
 
-				delta += 0.002;
+				delta = THREE.Math.degToRad(slideValue); 
 
 
 				// the order here seems differnt
