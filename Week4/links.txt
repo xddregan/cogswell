@@ -1,0 +1,13 @@
+https://youtu.be/OmuQmydipGg
+
+https://youtu.be/20UTQMMZhjI
+
+Mesh collision
+
+https://youtu.be/lQpCN81aDaI
+
+https://www.geeksforgeeks.org/polygon-clipping-sutherland-hodgman-algorithm-please-change-bmp-images-jpeg-png/
+
+https://developer.mozilla.org/en-US/docs/Games/Techniques/3D_collision_detection
+
+https://www.geeksforgeeks.org/check-whether-a-point-lies-inside-a-sphere-or-not/
