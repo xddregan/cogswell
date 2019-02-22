@@ -1,0 +1,26 @@
+{
+	"levelobjects" : [ 
+
+              {
+                    "model" : "data/boxscene.dae",
+                    "position": [4.0,0.0,4.1],
+                    "rotationy" : 45,
+                    "scale": 1.0,
+                    "height": 1
+              },
+             {
+                    "model" : "data/cartoonshop1.dae",
+                    "position": [-4.0,0.0,0.1],
+                    "rotationy" : 45,
+                    "scale": 1.0,
+                    "height": 1
+              },
+             {
+                    "model" : "data/cartoonshop2.dae",
+                    "position": [-4.0,0.0,-4.1],
+                    "rotationy" : 45,
+                    "scale": 1.0,
+                    "height": 1
+              }
+	]
+}

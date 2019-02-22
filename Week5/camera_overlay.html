@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>three.js ui examples</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {
+				margin: 0px;
+				background-color: #000000;
+				overflow: hidden;
+			}
+		</style>
+	</head>
+	<body>
+
+
+		<script src="js/three.js"></script>
+		<script src="http://threejs.org/examples/js/loaders/ColladaLoader.js"></script>
+		<script src="http://threejs.org/examples/js/controls/OrbitControls.js"></script>
+		<script>
+			var camera, scene, renderer,controls,ui_scene,ui_camera;
+			var ammoCounter;
+			var ammoCount =0;
+			var box;
+			var delta = 0.0;
+			var mouse;
+			var cameraTheta = 0.0;
+			init();
+			animate();
+			function init() {
+				camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 200 );
+				camera.position.x = -10;
+				camera.position.y = 5;
+				camera.position.z = -10;
+				controls = new THREE.OrbitControls(camera);
+				scene = new THREE.Scene();
+
+				mouse = new THREE.Vector2(); 
+
+				// UI scene and camera
+				ui_scene = new THREE.Scene();
+				ui_camera = new THREE.OrthographicCamera( window.innerWidth / - 2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / - 2, 1, 1000 );
+				ui_scene.add(ui_camera);
+
+				var ui_light = new THREE.AmbientLight( 0x707070, 0.7 ); // soft white light
+				ui_scene.add(ui_light);
+
+
+
+				var light = new THREE.AmbientLight( 0x707070, 0.3 ); // soft white light
+				scene.add( light );
+
+				var directionalLight = new THREE.DirectionalLight( 0xffffff, 0.7 );
+
+				camera.add( directionalLight );
+				scene.add( camera );
+
+				renderer = new THREE.WebGLRenderer( { antialias: true } );
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				document.body.appendChild( renderer.domElement );
+				//
+				makeWorld();
+				makeUIElements();
+				window.addEventListener( 'resize', onWindowResize, false );
+				window.addEventListener( 'mousedown', onMouseClick);
+				
+			}
+
+
+		
+			function onWindowResize() {
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+				renderer.setSize( window.innerWidth, window.innerHeight );
+			}
+			function animate() { requestAnimationFrame( animate );
+				//mesh.rotation.x += 0.005;
+				//mesh.rotation.y += 0.01;
+				controls.update();
+				renderer.render( scene, camera );
+				renderer.autoClear = false;
+				renderer.render( ui_scene, ui_camera );
+				renderer.autoClear = true;
+				ammoCounter.updateText(ammoCount.toString());
+				ammoCount = (++ammoCount)%100;
+
+				if(ammoCounter)
+				{
+					var wPos = new THREE.Vector3(mouse.x,mouse.y,-1);
+					wPos.unproject(camera);
+					ammoCounter.drawGroup.position.set(wPos.x,wPos.y,wPos.z,1.0);
+					ammoCounter.drawGroup.quaternion.copy(camera.quaternion);
+					
+
+				}
+
+
+				
+			}
+
+
+			function onMouseClick( event ) { 
+			  // calculate mouse position in normalized device coordinates 
+
+			  // (-1 to +1) for both components 
+			  mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1; 
+			  mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1; 
+				console.log("got a mouse "+mouse.x+"  " +mouse.y);
+				} 
+
+			function UITextObject( text)
+			{
+			
+				this.canvasW =  256;
+				this.canvasH =  256;
+				this.hudCanvas = document.createElement('canvas');		
+				this.hudCanvas.width = this.canvasW;
+				this.hudCanvas.height = this.canvasH;
+				this.hudBitmap = this.hudCanvas.getContext('2d');
+
+				this.hudBitmap.font = "Normal 80px Arial";
+				this.hudBitmap.textAlign = 'center';
+				this.hudBitmap.fillStyle = "rgba(245,245,245,0.75)";
+				this.hudBitmap.fillText(text, this.canvasW / 2, this.canvasH / 2);
+				this.hudTexture = new THREE.Texture(this.hudCanvas) 
+				this.hudTexture.needsUpdate = true;
+
+				this.updateText = function (newText) {
+					this.hudBitmap.clearRect(0,0,this.canvasW,this.canvasH);
+					this.hudBitmap.fillText(newText, this.canvasW / 2, this.canvasH / 2);
+					this.hudTexture.needsUpdate = true;
+				}
+
+			}
+
+
+			// 0,0 is bottm left of screen
+			// 1,1 is top right of screen
+
+			function getScreenX(normalizedX)
+			{
+				var scaledX =  normalizedX * window.innerWidth;
+				return window.innerWidth / -2  + scaledX;
+			}
+			
+			function getScreenY(normalizedY)
+			{
+				var scaledY =  normalizedY * window.innerHeight;
+				return window.innerHeight / -2  + scaledY;
+
+			}
+	
+			function getFrustumX(normalizedX)
+			{
+				return normalizedX;
+			}
+			
+			function getFrustumY(normalizedY)
+			{
+				return normalizedY;
+
+			}
+	
+		
+			function UIElement(x,y,xsize,ysize,texture,texture_alpha,text)
+			{
+
+				this.xSize = xsize;
+				this.ySize = ysize;
+				this.xPos = x;
+				this.yPos = y;
+				this.bak_mesh = null;
+				this.mesh = null;
+			
+				
+				this.updateSizePosition = function (nx,ny,nxsize,nysize){
+					this.xSize = nxsize;
+					this.ySize = nysize;
+					this.xPos = nx;
+					this.yPos = ny;
+					var xScreenSize = this.xSize * window.innerWidth ; 
+					var yScreenSize = this.ySize * window.innerHeight ; 
+					var adjustedX = getScreenX(x) + xScreenSize /2;   
+					var adjustedY = getScreenY(y) + yScreenSize /2;   
+					if(this.bak_mesh)
+						this.bak_mesh.position.set(adjustedX,adjustedY,-15,-100);
+					if(this.mesh)
+						this.mesh.position.set(adjustedX,adjustedY,-15,-100);
+				
+				}
+
+				this.updateText = function (newText)
+				{
+					this.uiTextObject.updateText(newText);
+
+				}
+
+				var xScrSize = this.xSize * window.innerWidth ; 
+				var yScrSize = this.ySize * window.innerHeight ; 
+
+				if (texture )
+				{
+
+					var bak_geometry = new THREE.PlaneBufferGeometry( xScrSize, yScrSize, 4,4 );
+					var bak_material = new THREE.MeshBasicMaterial( 
+						{ 
+							color: 0xffffff, 
+							map : texture, 
+							transparent:true,
+						});
+					if (texture_alpha)
+						bak_material.alphaMap = texture_alpha;
+					this.bak_mesh = new THREE.Mesh( bak_geometry, bak_material );
+				}
+
+				var geometry = new THREE.PlaneBufferGeometry( xScrSize, yScrSize, 4,4 );
+				this.uiTextObject = new UITextObject(text);
+				var material = new THREE.MeshBasicMaterial( 
+					{ 
+						color: 0xffffff, 
+						map : this.uiTextObject.hudTexture, 
+						transparent:true 
+					});
+				this.mesh = new THREE.Mesh(geometry,material);
+
+				this.drawGroup = new THREE.Group();
+				this.drawGroup.add(this.mesh);
+				if (this.bak_mesh)
+					this.drawGroup.add(this.bak_mesh);
+
+				this.updateSizePosition(x,y,xsize,ysize,texture,texture_alpha);
+	
+			}
+
+		
+
+
+			function UIElementCamera(x,y,xsize,ysize,roty,texture,texture_alpha,text)
+			{
+
+				this.xSize = xsize;
+				this.ySize = ysize;
+				this.xPos = x;
+				this.yPos = y;
+				this.bak_mesh = null;
+				this.mesh = null;
+			
+				
+				this.updateSizePosition = function (nx,ny,nxsize,nysize,roty){
+					this.xSize = nxsize;
+					this.ySize = nysize;
+					this.xPos = nx;
+					this.yPos = ny;
+					var xScreenSize = this.xSize * window.innerWidth ; 
+					var yScreenSize = this.ySize * window.innerHeight ; 
+					var adjustedX = getFrustumX(nx) ;   
+					var adjustedY = getFrustumY(ny) ;   
+
+
+					var newPos = new THREE.Vector3( adjustedX, adjustedY, -1 )
+						newPos.unproject( camera );
+					//if (this.bak_mesh)
+				//		this.bak_mesh.position.set(newPos.x,newPos.y,newPos.z);
+				//	if(this.mesh)
+				//		this.mesh.position.set(newPos.x,newPos.y,newPos.z);
+				
+				}
+
+				this.updateText = function (newText)
+				{
+					this.uiTextObject.updateText(newText);
+
+				}
+
+				var xScrSize = this.xSize * window.innerWidth ; 
+				var yScrSize = this.ySize * window.innerHeight ; 
+
+				if (texture )
+				{
+
+					var bak_geometry = new THREE.PlaneBufferGeometry( xsize, ysize, 4,4 );
+					var bak_material = new THREE.MeshBasicMaterial( 
+						{ 
+							color: 0xffffff, 
+							map : texture, 
+							transparent:true,
+						});
+					if (texture_alpha)
+						bak_material.alphaMap = texture_alpha;
+					this.bak_mesh = new THREE.Mesh( bak_geometry, bak_material );
+					this.bak_mesh.rotateY(THREE.Math.degToRad(roty));
+				}
+
+				var geometry = new THREE.PlaneBufferGeometry( xsize, ysize, 4,4 );
+				this.uiTextObject = new UITextObject(text);
+				var material = new THREE.MeshBasicMaterial( 
+					{ 
+						color: 0xffffff, 
+						map : this.uiTextObject.hudTexture, 
+						transparent:true 
+					});
+				this.mesh = new THREE.Mesh(geometry,material);
+				this.mesh.rotateY(THREE.Math.degToRad(roty));
+
+
+				this.drawGroup = new THREE.Group();
+				this.drawGroup.add(this.mesh);
+				if (this.bak_mesh)
+					this.drawGroup.add(this.bak_mesh);
+
+				this.updateSizePosition(x,y,xsize,ysize,roty);
+	
+			}
+
+
+			function makeUIElements()
+			{
+
+				var texture = new THREE.TextureLoader().load( 'data/ammo.png' );
+				var texture_alpha = new THREE.TextureLoader().load( 'data/ammo_alpha.png' );
+
+				if (texture)
+					console.log("loaded texture");
+
+				//here we used normalized coordinates and scales
+				// 0,0 is bottm left of screen
+				// 1,1 is top right of screen
+				// A scale of 1,1 covers the screen
+				var uiElement = new UIElementCamera(20.1,-5.0,0.2,0.2,0.0,texture,texture_alpha,"xx") ;
+
+				scene.add(uiElement.drawGroup);	
+				
+				ammoCounter = uiElement;
+
+				var uiElement2 = new UIElement(0.5,0.0,0.10,0.1,null,null,"Player1") ;
+				ui_scene.add(uiElement2.drawGroup);	
+
+			}
+
+
+
+
+
+
+			function makeWorld() {
+
+				var materials = []; 
+				for (var i = 0 ; i < 20 ; i++ ){
+					materials.push( new THREE.MeshLambertMaterial( 
+						{
+							color : (Math.random() * 0xffffffff)
+						}));
+				}
+
+				var object = new THREE.Mesh( new THREE.PlaneBufferGeometry( 100, 100, 4, 4 ), materials[0] );
+			   	object.position.set( 0, 0, 0 );
+				object.rotateX(THREE.Math.degToRad(-90));
+				scene.add( object );
+
+				object = new THREE.Mesh( new THREE.SphereBufferGeometry( 5, 20, 10 ), materials[1] );
+				object.position.set( - 10, 5, 10 );
+				scene.add( object );
+
+
+			
+
+				object = new THREE.Mesh( new THREE.BoxBufferGeometry( 2, 2, 2, 4, 4, 4 ), materials[2] );
+				object.position.set( 10, 1, 10 );
+				scene.add( object );
+		  		box = object;
+
+				object = new THREE.Mesh( new THREE.BoxBufferGeometry( 3, 3, 3, 4, 4, 4 ), materials[3] );
+				object.position.set( 10, 1.5, -10 );
+				scene.add( object );
+
+
+
+
+
+			}	
+
+
+
+
+		</script>
+
+	</body>
+</html>
