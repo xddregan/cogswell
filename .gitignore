@@ -1,0 +1,8 @@
+8539OS_CODE/
+artsource/
+# Visual Studio cache directory
+.vs/
+.svn/
+*.swp
+*.swo
+
