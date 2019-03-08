@@ -27,7 +27,7 @@
 [translateX doc](https://threejs.org/docs/#api/en/core/Object3D.translateX)
 
 
-- Collision detection how 
+- Collision detection howto
 	- you will need to create a CheckCollisions function that is called every frame
 	- in that you can do the respective collisons
 	- to detect collision between two objects you will need do something similar to following code
