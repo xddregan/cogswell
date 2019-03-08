@@ -38,29 +38,30 @@
 	// this is function to check collision between two objects object1 and object2
 
 
-	function checkCollision(object1 , object2)
+
+		function checkCollision(object1 , object2)
+		{
+		
+			var object1Box = new THREE.Box3(); // create a new box
+			object1Box.setFromObject(object1);  // update the from the object so it's got right position and size
+
+			var object2Box = new THREE.Box3(); // same for second object
+			object2Box.setFromObject(object2);
+
+			if (object1Box.intersectsBox(object2Box))  // now check if the two boxes are colliding
 			{
-			
-				var object1Box = new THREE.Box3(); // create a new box
-				object1.setFromObject(object1);  // update the from the object so it's got right position and size
-
-				var object2Box = new THREE.Box3(); // same for second object
-				object2Box.setFromObject(object2);
-
-				if (object1Box.intersectsBox(object2Box))  // now check if the two boxes are colliding
-				{
-					console.log("object1 is intersecting object2");
-					// handle collisions here
-					return true;
-				}
-				else
-				{
-					return false;
-
-				}
-
+				console.log("object1 is intersecting object2");
+				// handle collisions here
+				return true;
+			}
+			else
+			{
+				return false;
 
 			}
+
+
+		}
 
 
 ```
