@@ -36,7 +36,9 @@
 ```javascript
 
 	// this is function to check collision between two objects object1 and object2
-	function checkCollisions()
+
+
+	function checkCollision(object1 , object2)
 			{
 			
 				var object1Box = new THREE.Box3(); // create a new box
@@ -49,10 +51,17 @@
 				{
 					console.log("object1 is intersecting object2");
 					// handle collisions here
+					return true;
+				}
+				else
+				{
+					return false;
+
 				}
 
 
 			}
+
 
 ```
 
