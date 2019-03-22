@@ -26,6 +26,7 @@
 			var plane;
 			var planeTexture;
 			var boxMat;
+			var ratamahatta;
 			init();
 			animate();
 			function init() {
@@ -56,6 +57,7 @@
 				document.body.appendChild( renderer.domElement );
 				//
 				makeWorld();
+				makeCharacter();
 				window.addEventListener( 'resize', onWindowResize, false );
 				
 				window.addEventListener( 'keydown', onKeyDown, false );
@@ -137,6 +139,17 @@
 
 
 			}	
+
+			function makeCharacter()
+			{
+
+				ratamahatta	= new THREEx.MD2CharacterRatmahatta()
+				scene.add(ratamahatta.character.object3d)
+
+				
+
+			}
+
 
 
 			function onKeyDown( event ) {
