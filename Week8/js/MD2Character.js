@@ -167,6 +167,7 @@ THREE.MD2Character = function () {
 			if ( action ) {
 
 				this.meshBody.activeAction = action.play();
+			
 
 			}
 
