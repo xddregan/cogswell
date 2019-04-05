@@ -1,6 +1,8 @@
 
 function Particle(geometry, material) {
 	THREE.Points.call(this,geometry,material);	
+
+	
 }
 
 
@@ -9,8 +11,8 @@ Particle.prototype.constructor = Particle;
 
 Particle.prototype.update = function(delta) 
 {
-	
-	THREE.Points.prototype.update.call(this,delta)
+	var accel = new THREE.Vector3(0,-0.9,0);
+			
 }
 
 
@@ -24,10 +26,23 @@ ParticleSystem.prototype = Object.create(THREE.Object3D.prototype);
 ParticleSystem.prototype.constructor = ParticleSystem;
 ParticleSystem.prototype.update = function(delta) 
 {
-	
-	//THREE.Object.prototype.update.call(this,delta)
+	for (var i = 0 ; i < this.children.length ; i++)	
+	{
+		var object = this.children[i];	
+		if ( object instanceof Particle)
+		{
+			object.update(delta);		
+		}
+
+	}
+		
+
 }
 
+ParticleSystem.prototype.addParticle = function(particle) 
+{
+	this.add(particle);	
+}
 
 
 
