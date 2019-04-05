@@ -1,0 +1,67 @@
+Download Week 9
+Duplicate player_world.html
+Control box movement with Ease.
+Take player_world.html
+Create a global variable timeSinceStart
+In Init function set timeSinceStart = 0;
+In animation function timeSinceStart += delta; 
+Duplicate the box to create box2 and add to scene
+box2 = box.clone();  // to make clone, add to scene after this 
+set box at 0,1.5, 0
+set box2 at 0,1.5, 5
+Add an update function moveBoxes(deltaTime), that is called each frame from animate function 
+create var t = (timeSinceStart/10) %1;
+This variable with range 0-1 over 10 seconds. 
+add 
+box.position.x = t * 20;
+box2.position.x = t * t * t * 20;
+Look at the different movement of boxes
+Note they start and end at same time
+Experiment with t*t  and Math.sin(t * THREE.Math.degToRad(90)) instead of t*t*t
+now include js/easing.js
+replace t*t*t with some some of the various functions
+easing.easeInQuint(t); look at difference between In and Out versions
+easing.easeOutBounce(t)
+inspect js/easing.js for options
+
+
+
+Using source from last exercise. 
+Create a new file in js sub called animutils.js  (include it in the scripts section, html file
+make 
+declare box_keys, box2_keys as global variables ,
+call makeKeyframes at end of Init()
+in animutils.js create a function evaluateKeyframes(keyframes, t)
+for now return new THREE.Vector3(0,3.5,5);
+update moveBoxes so instead of updating x position we 
+box2.position.copy(evaluateKeyframes(box2_keys,t));
+after compiling and running box should be in raised (just to indicate it’s working)
+
+
+
+
+
+
+implementation of evaluateKeyframes (keyframes,t)
+write a utility makeVectorFromKey(key) 
+now in evaluateKeyframes
+if t is less than t of first keyframe return a vector made from first key
+if t is greater than t of last key return a vector made from last key
+set var indexAfter = 0
+set var indexAtOrBefore = 0
+using a do - while loop
+do 
+if t == keyframe[indexAtOrBefore]
+return a vector make from this key
+else
+indexAfter++;
+indexAtOrBefore = indexAfter -1;
+while (t > keyframes[indexAfter].t)
+// at this point indexAtOrBefore is keyframe before t
+// indexAfter is keyframe after
+//now we interpolate
+make vector3s vBefore and vAfter from the before and after keyframes
+make a new zero vector3 called retVector
+calculate interp as described in  keyframes slide
+retval.lerpVectors(vBefore,vAfter,interp)
+return retVal;
