@@ -1,4 +1,4 @@
-# Draw textured cube  
+# Draw textured poly  
 
 ## copy latest version and make changes
 
