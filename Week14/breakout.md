@@ -5,5 +5,5 @@
 
 - take breakout.html as basis
 
-
-[](https://github.com/xddregan/Week14/mdimages/shot1.png)
+![](mdimages/shot1.png "Shot1")
+![](mdimages/shot2.png "Shot1")
