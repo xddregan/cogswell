@@ -159,7 +159,7 @@
 //  There is a slight issue where ball intersects before it bounces we can ignore this issue
 			function collideBall(newPos,direction,radius,listOfObjects)
 			{
-				var ray = new THREE.Raycaster(newPos,direction.clone().normalize(),0,radius);		
+				var ray = new THREE.Raycaster(newPos,direction.clone().normalize(),0.01,radius);		
 				var collideList = ray.intersectObjects(listOfObjects);
 
 				if ( collideList.length > 0 && collideList[0].distance < radius )
