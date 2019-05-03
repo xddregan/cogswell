@@ -73,6 +73,7 @@
 				renderer.setSize( window.innerWidth, window.innerHeight );
 				document.body.appendChild( renderer.domElement );
 				//
+				setCubeMap();
 				makeWorld();
 				window.addEventListener( 'resize', onWindowResize, false );
 				
@@ -99,6 +100,22 @@
 				renderer.render( scene, camera );
 			}
 
+		function setCubeMap()	
+			{
+				var path = "textures/MilkyWay/";
+				var format = '.jpg';
+				var urls = [
+					path + 'px' + format, path + 'nx' + format,
+					path + 'py' + format, path + 'ny' + format,
+					path + 'pz' + format, path + 'nz' + format
+				];
+				var reflectionCube = new THREE.CubeTextureLoader().load( urls );
+				reflectionCube.format = THREE.RGBFormat;
+
+				//This sets the background to cubmap
+				scene.background = reflectionCube;
+			}
+
 
 			function makePills()
 			{
@@ -112,8 +129,31 @@
 				//TODO 
 				console.log("TODO makeWorld");
 
-			}	
+			}
 
+			function pillHitOccurred(pill,collideInfo)
+			{
+		  		console.log('pillHit ',collideInfo);
+				//TODO
+				// Remove the pill from pills list
+				// Remove pill from Scene
+				// Spawn powerup (only do in phase 2)
+
+				
+			}
+			function wallHitOccurred(wall,collideInfo)
+			{
+		  		console.log('wallHit ',collideInfo);
+				// TODO 
+				// if hits bottom wall then restart
+			}
+
+			function paddleHitOccurred(paddle,collideInfo)
+			{
+		  		console.log('paddleHit ',collideInfo);
+				// can ignore
+				// in phase t
+			}
 
 //	Should not need to edit these functions initially as 
 //  There is a slight issue where ball intersects before it bounces we can ignore this issue
@@ -147,7 +187,6 @@
 					moveDir.normalize();
 					normal.y = 0;
 					normal.normalize();
-					console.log("normal ", normal," moveDir " , moveDir);	
 					var outDirection =  moveDir.reflect(normal);
 					return outDirection;
 
@@ -161,12 +200,11 @@
 				var newPos;
 		  		var newDir;
 
-				//console.log("ballpos",newPos);
 
 				var wallHit  = collideBall(currPos,currDir,1+delta * ballSpeed ,walls);  				
 				if ( wallHit != null)
 				{
-		  			console.log('wallHit ',wallHit);
+					wallHitOccurred(wallHit.object,wallHit)
 					newDir = bounceBall(currPos,currDir,wallHit);  	
 					newPos = currDir.multiplyScalar(wallHit.distance).add(currPos);
 				}
@@ -175,7 +213,7 @@
 					var paddleHit = collideBall(currPos,currDir,1+delta * ballSpeed ,[paddle]);  				
 					if ( paddleHit != null)
 					{
-		  				console.log('paddleHit ',paddleHit);
+						paddleHitOccurred(paddleHit.object,paddleHit)
 						newDir = bounceBall(currPos,currDir,paddleHit);  	
 						newPos = currDir.multiplyScalar(paddleHit.distance).add(currPos);
 					}
@@ -184,7 +222,7 @@
 						var pillHit = collideBall(currPos,currDir,1+delta * ballSpeed ,pills);  				
 						if ( pillHit != null)
 						{
-		  					console.log('pillHit ',pillHit);
+							pillHitOccurred(pillHit.object,pillHit)
 							newDir = bounceBall(currPos,currDir,pillHit);  	
 							newPos = currDir.multiplyScalar(pillHit.distance).add(currPos);
 						}
@@ -199,7 +237,7 @@
 
 				ball.position.copy(newPos);
 		  		ballDirection.copy(newDir);
-				console.log("ballnewpos",ball.position,"ballnewdir",ballDirection);
+				//console.log("ballnewpos",ball.position,"ballnewdir",ballDirection);
 
 		  	}
 
